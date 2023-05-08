@@ -52,13 +52,13 @@
 
 1. `\_\_construct()`：类的初始化函数，当一个新类创建时就会自动调用；
    
-   - 反序列化时不会调用执行$\_\_construct()$；
+   - 反序列化时不会调用执行`\_\_construct()`；
    
-2. $\_\_destruct()$：当销毁一个对象时会自动调用，在销毁前可以执行一些操作；
+2. `\_\_destruct()`：当销毁一个对象时会自动调用，在销毁前可以执行一些操作；
 
-3. $in\_array(search,~array)$：查找$search$是否存在于$array$内，需要注意$array$类型是数组，并不是子串匹配；
+3. `in\_array(search,~array)`：查找`search`是否存在于`array`内，需要注意`array`类型是数组，并不是子串匹配；
 
-4. $call\_user\_func\_array(callback,~param\_arr)$：把$callback$当做函数执行，所需参数存在$param\_arr$数组内；
+4. `call\_user\_func\_array(callback,~param\_arr)`：把`callback`当做函数执行，所需参数存在`param\_arr`数组内；
 
 5. $exec(command,~output)$：在Linux命令行下执行字符串$command$，执行结果为$output$；
 
