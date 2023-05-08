@@ -17,8 +17,8 @@
 
 ## 代码分析
 
-1. $include(file)$：将$file$下的PHP文件插入到当前PHP文件中（在服务器执行$file$之前），后续的代码可以直接使用它的变量，函数，类等等；
-   + $require(file)$跟$include(file)$功能相同，只是当文件不存在时，$require$会报错并停止运行，$include$会发出警告继续执行代码；
+1. `include(file)`：将`file`下的PHP文件插入到当前PHP文件中（在服务器执行`file`之前），后续的代码可以直接使用它的变量，函数，类等等；
+   + `require(file)`跟`include(file)`功能相同，只是当文件不存在时，`require`会报错并停止运行，`include`会发出警告继续执行代码；
 
 ## 解题过程
 
@@ -37,7 +37,7 @@
   ```
 
   - 过滤器可以设置多个，按顺序依次对数据流进行过滤；过滤器大致可分为四类：字符串过滤器、转换过滤器、压缩过滤器、加密过滤器；
-  - 过滤器中的$read=$可以省略；
+  - 过滤器中的`read=`可以省略，可能会被屏蔽关键字`read`；
 
 1. 字符串过滤
 
@@ -158,9 +158,9 @@ Attack方式选择Cluster bomb，如下：
 ?filename=php://filter/convert.iconv.SJIS-win*.UCS-4*/resource=check.php
 ```
 
-观察check.php，确实是过滤了$/base~be~encode~print~zlib~quoted~write~rot13~string$这些关键词；
+观察check.php，确实是过滤了`/base be encode print zlib quoted write rot13 string`这些关键词；
 
-并没有给出$flag$的信息，我们尝试访问$flag.php$也许能得到$flag$，payload如下：
+并没有给出flag的信息，我们尝试访问`flag.php`也许能得到`flag`，payload如下：
 
 ```
 ?filename=php://filter/convert.iconv.SJIS-win*.UCS-4*/resource=flag.php
