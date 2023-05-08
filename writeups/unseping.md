@@ -56,15 +56,15 @@
    
 2. `__destruct()`：当销毁一个对象时会自动调用，在销毁前可以执行一些操作；
 
-3. `in_array(search,~array)`：查找`search`是否存在于`array`内，需要注意`array`类型是数组，并不是子串匹配；
+3. `in_array(search, array)`：查找`search`是否存在于`array`内，需要注意`array`类型是数组，并不是子串匹配；
 
-4. `call_user_func_array(callback,~param_arr)`：把`callback`当做函数执行，所需参数存在`param\_arr`数组内；
+4. `call_user_func_array(callback, param_arr)`：把`callback`当做函数执行，所需参数存在`param_arr`数组内；
 
-5. `exec(command,~output)`：在Linux命令行下执行字符串`command`，执行结果为`output`；
+5. `exec(command, output)`：在Linux命令行下执行字符串`command`，执行结果为`output`；
 
 6. `var_dump(var)`：打印变量`var`的详细信息，包括数据类型，值，长度等；
 
-7. `pre_match_all(regexp,~str,~pat_array)`：将`str`同正则表达式`regexp`比较，匹配结果存储在`pat_array`数组中。若array不是空则返回`true`，否则`false`；
+7. `pre_match_all(regexp, str, pat_array)`：将`str`同正则表达式`regexp`比较，匹配结果存储在`pat_array`数组中。若array不是空则返回`true`，否则`false`；
 
 8. `__wakeup()`：当反序列化执行时会先调用`__wakeup()`，预处理数据。当序列化对象的属性个数大于真实的属性个数时会跳过执行`__wakeup()`；
 
@@ -89,18 +89,18 @@
 
      反序列化时为绕过`\_\_wakup()`的检查，需要将“对象属性个数”增大；
 
-   8. `serilize(),~unserilize()`：将对象序列化，反序列化。序列化结果参考如上；
+   8. `serilize(), unserilize()`：将对象序列化，反序列化。序列化结果参考如上；
 
 ## 解题过程
 
 通过分析代码，本题大致是将POST而来的ctf参数值，进行base64解码后再反序列化。
 
-1. `\_\_wakeup()`使用`waf()`对参数进行了过滤，不允许出现`|~\&~;~空格~/~cat~flag~tac~php~ls`这些字符；
-2. `\_\_destruct()`在销毁对象之前会看`\$method`是否存在字符串`"ping"`，如果存在则会进行`ping()`，这样会执行`exec()`，从而执行我们所需要的命令；
+1. `__wakeup()`使用`waf()`对参数进行了过滤，不允许出现`| & ; 空格 / cat flag tac php ls`这些字符；
+2. `__destruct()`在销毁对象之前会看`$method`是否存在字符串`"ping"`，如果存在则会进行`ping()`，这样会执行`exec()`，从而执行我们所需要的命令；
 
 所以我们要构造一个base64编码后的且序列化后的ease对象（注意顺序：先序列化再编码），用于执行我们需要的Linux命令；
 
-我们要构造的ease对象应该像这样的：`\$e~=~new~ease("ping",~"ls");`这样可以查看当前目录有哪些文件。但是“ls”被过滤掉了，所以我们考虑如何绕过过滤。
+我们要构造的ease对象应该像这样的：`$e = new ease("ping", "ls");`这样可以查看当前目录有哪些文件。但是“ls”被过滤掉了，所以我们考虑如何绕过过滤。
 
 ### Linux命令绕过
 
@@ -134,7 +134,7 @@
 
    `-d`表示解码，`-e`表示编码；
 
-3. `\$1,~\$@,~\$*~''~""`混淆
+3. `$1, $@, $* '' ""`混淆
 
    可以在原命令中插入这些字符并不影响命令的执行；
 
@@ -162,11 +162,11 @@
 
 5. 利用环境变量
 
-   可以使用`echo~\{PATH\}`查看环境变量
+   可以使用`echo {PATH}`查看环境变量
 
    [![p9w4uY6.md.png](https://s1.ax1x.com/2023/05/08/p9w4uY6.md.png)](https://imgse.com/i/p9w4uY6)
 
-   `\$\{PATH:a:b\}`,从索引`a`开始截取，截取长度为`b`（索引从`0`开始）；
+   `${PATH:a:b}`,从索引`a`开始截取，截取长度为`b`（索引从`0`开始）；
 
    ```
    ${PATH:5:1}${PATH:2:1} //ls
@@ -187,15 +187,15 @@
 
 7. 空格绕过
 
-   空格可以用`\$IFS~\$\{IFS\}~\$IFS\$1~<~<>`符号替代；
+   空格可以用`$IFS ${IFS} $IFS$1 < <>`符号替代；
 
-   或者使用`\{\}`来括起命令从而省略空格；
+   或者使用`{}`来括起命令从而省略空格；
 
-   仅使用`\$IFS`时需要使用引号括起文件名；
+   仅使用`$IFS`时需要使用引号括起文件名；
 
-   `\$IFS\$1`中可以是任何数字；
+   `$IFS$1`中可以是任何数字；
 
-   `<~<>`使用较少，因为它们本身也是Linux的命令符号，可能导致命令解析错误；
+   `< <>`使用较少，因为它们本身也是Linux的命令符号，可能导致命令解析错误；
 
    ```
    cat$IFS'flag.txt'
@@ -256,7 +256,7 @@ ctf=Tzo0OiJlYXNlIjoyOntzOjY6Im1ldGhvZCI7czo0OiJwaW5nIjtzOjQ6ImFyZ3MiO2E6MTp7aTow
 
 [![p9w7Zin.md.png](https://s1.ax1x.com/2023/05/08/p9w7Zin.md.png)](https://imgse.com/i/p9w7Zin)
 
-发现存在一个文件夹，为`flag\_1s\_here`，构造`ls`指令
+发现存在一个文件夹，为`flag_1s_here`，构造`ls`指令
 
 ```
 $e = new ease("ping", array('l$*s${IFS}f$*lag_1s_here'));
@@ -270,7 +270,7 @@ Tzo0OiJlYXNlIjoyOntzOjY6Im1ldGhvZCI7czo0OiJwaW5nIjtzOjQ6ImFyZ3MiO2E6MTp7aTowO3M6
 
 [![p9wHahn.md.png](https://s1.ax1x.com/2023/05/08/p9wHahn.md.png)](https://imgse.com/i/p9wHahn)
 
-发现flag所在文件为`flag\_831b69012c67b35f.php`，构造`cat`指令：
+发现flag所在文件为`flag_831b69012c67b35f.php`，构造`cat`指令：
 
 ```
 $e = new ease("ping", array('ca$*t${IFS}f$*lag_1s_here$(printf${IFS}"\57")f$*lag_831b69012c67b35f.p$*hp'));
