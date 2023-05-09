@@ -24,6 +24,8 @@
 
 + 本题提供文件包含问题的一个思路：利用php://filter伪协议查看源文件；
 
+  `include(file)`，`file`参数通常由GET或POST请求得到，当请求为php://filter协议包装时，可以绕过一些文件检查；
+
 ### php伪协议总结
 
 ####  php://filter伪协议
@@ -37,7 +39,7 @@
   ```
 
   - 过滤器可以设置多个，按顺序依次对数据流进行过滤；过滤器大致可分为四类：字符串过滤器、转换过滤器、压缩过滤器、加密过滤器；
-  - 过滤器中的`read=`可以省略，可能会被屏蔽关键字`read`；
+  - 过滤器中的可以是`read=`（读文件）或`write=`（写文件），若没有指明则默认是读；`read`有可能被当做关键词而屏蔽；
 
 1. 字符串过滤
 
@@ -103,7 +105,7 @@
 
 #### data://协议
 
-+ data://可以封装数据格式，用来传递数据；
++ data://可以封装数据，用来传递数据，传递时会被认为是一个文件，可以被`file_get_content()`正确解析；
 
 + 举例语法：
 
@@ -111,6 +113,20 @@
   data://text/plain,<?php phpinfo();?> #不做处理，直接传递字符串
   data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8+ #将字符串进行base64解码再传递字符串
   ```
+
+#### php://input协议
+
++ php://input可以访问请求的原始数据的只读流，用于执行PHP代码；
+
++ 举例语法：
+
+  ```
+  POST /?file=php://input HTTP/1.1
+  ...
+  <?php system("ls");?>
+  ```
+
+  注意需要采用POST方式提交，在表单`enctype="multipart/form-data"`时，执行无效；
 
 ### 构造payload
 
